@@ -67,7 +67,7 @@ module Pod
       subspecs = attributes_hash.delete('subspecs')
       testspecs = attributes_hash.delete('testspecs')
       spec.attributes_hash = attributes_hash
-      spec.test_specification = !attributes_hash['test_type'].nil?
+      spec.type = attributes_hash['test_type'].nil? ? nil : :test
       spec.subspecs.concat(subspecs_from_hash(spec, subspecs))
       spec.subspecs.concat(subspecs_from_hash(spec, testspecs))
       spec

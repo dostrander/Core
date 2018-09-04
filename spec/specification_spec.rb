@@ -316,7 +316,7 @@ module Pod
           s.test_spec {}
         end
         test_spec = @spec.test_specs.first
-        @spec.subspec_by_name('Pod/Tests', false, true).should == test_spec
+        @spec.subspec_by_name('Pod/Tests', false, [:test]).should == test_spec
       end
 
       it 'returns a subspec given the relative name' do

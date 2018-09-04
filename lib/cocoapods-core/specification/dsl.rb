@@ -1481,7 +1481,7 @@ module Pod
       #   end
       #
       def test_spec(name = 'Tests', &block)
-        subspec = Specification.new(self, name, true, &block)
+        subspec = Specification.new(self, name, :test, &block)
         @subspecs << subspec
         subspec
       end

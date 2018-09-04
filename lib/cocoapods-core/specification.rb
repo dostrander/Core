@@ -34,18 +34,18 @@ module Pod
     # @param  [String] name
     #         the name of the specification.
     #
-    # @param [Bool] test_specification
-    #        Whether the specification is a test specification
+    # @param [Symbol] type
+    #        the type of specification. Can be `:test` only now.
     #
-    def initialize(parent = nil, name = nil, test_specification = false)
+    def initialize(parent = nil, name = nil, type = nil)
       @attributes_hash = {}
       @subspecs = []
       @consumers = {}
       @parent = parent
       @hash_value = nil
-      @test_specification = test_specification
+      @type = type
       attributes_hash['name'] = name
-      attributes_hash['test_type'] = :unit if test_specification
+      attributes_hash['test_type'] = :unit if type == :test
 
       yield self if block_given?
     end
@@ -69,9 +69,13 @@ module Pod
     #
     attr_accessor :subspecs
 
-    # @return [Bool] If this specification is a test specification.
+    # @return [Symbol] the type of specification.
     #
-    attr_accessor :test_specification
+    attr_accessor :type
+
+    def test_specification
+      type == :test
+    end
     alias_method :test_specification?, :test_specification
 
     # Checks if a specification is equal to the given one according its name
@@ -265,7 +269,7 @@ module Pod
     #
     # @return   [Specification] the subspec with the given name or self.
     #
-    def subspec_by_name(relative_name, raise_if_missing = true, include_test_specifications = false)
+    def subspec_by_name(relative_name, raise_if_missing = true, included_spec_types = [])
       if relative_name.nil? || relative_name == base_name
         self
       elsif relative_name.downcase == base_name.downcase
@@ -274,7 +278,7 @@ module Pod
       else
         remainder = relative_name[base_name.size + 1..-1]
         subspec_name = remainder.split('/').shift
-        subspec = subspecs.find { |s| s.base_name == subspec_name && (include_test_specifications || !s.test_specification?) }
+        subspec = subspecs.find { |s| s.base_name == subspec_name && (s.type.nil? || included_spec_types.include?(s.type)) }
         unless subspec
           if raise_if_missing
             raise Informative, 'Unable to find a specification named ' \
@@ -283,7 +287,7 @@ module Pod
             return nil
           end
         end
-        subspec.subspec_by_name(remainder, raise_if_missing, include_test_specifications)
+        subspec.subspec_by_name(remainder, raise_if_missing, included_spec_types)
       end
     end
 
