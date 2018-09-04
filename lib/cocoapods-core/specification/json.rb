@@ -40,7 +40,7 @@ module Pod
     # Configures a new specification from the given JSON representation.
     #
     # @param  [String] the JSON encoded hash which contains the information of
-    #         the specification.
+    #         the specification..
     #
     #
     # @return [Specification] the specification
